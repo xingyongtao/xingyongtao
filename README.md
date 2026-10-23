@@ -17,34 +17,46 @@
 ```mermaid
 flowchart TB
   U["用户 / 前端"]
+  G["Gateway / BFF"]
+
+  subgraph agents["Agent 层"]
+    P["基金经理 Agent<br/>按 PM 隔离状态"]
+    R["研究 Agent<br/>独立 Worker"]
+  end
 
   subgraph trade["交易与数据"]
-    A["AI Agent<br/>基金经理 · 研究"]
     E["交易执行<br/>仓位 · 订单"]
     X["交易所"]
-    D["实时数据<br/>喊单 · 排行榜"]
+    D["喊单 / 排行榜"]
   end
 
   subgraph support["平台支撑"]
-    L["日志与复盘"]
+    L["日志 / 决策历史"]
     C["积分计费"]
     O["运营后台"]
   end
 
-  U --> A
-  A --> E
+  U <--> G
+  G --> P
+  G --> R
+  G --> D
+  G --> L
+  G --> C
+  P <--> R
+  P --> E
   E --> X
-  A --> D
+  P --> D
   E --> D
-  D --> U
-  A --> L
+  P --> L
   E --> L
-  A --> C
+  P --> C
   L --> O
   C --> O
 ```
 
-**架构分工**：前端在 Cloudflare，后端在 GCP。CF 成本低、前端团队熟悉；GCP 有创业扶持、后端团队熟悉 K8s。跨云只覆盖展示类请求，Agent 的决策与下单执行不经过跨云链路。
+**架构分工**：前端与 Agent 运行时在 Cloudflare，业务后端在 GCP。CF 成本低、前端团队熟悉；GCP 有创业扶持、后端团队熟悉 K8s。跨云只覆盖用户侧请求（展示、管理、查询），Agent 的下单执行不跨云。
+
+**Agent 隔离**：基金经理 Agent 按 PM 隔离状态，交易所 API Key 等敏感凭证不跨 PM 共享；研究 Agent 各自独立部署，通过统一 Dispatch Worker 路由。
 
 ### 云原生平台 · 从 0 到 1 与双云迁移
 
