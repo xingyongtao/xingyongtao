@@ -10,7 +10,7 @@
 
 ## AI 交易平台
 
-一个跑在生产环境、用 Agent 做交易决策的平台：用户创建或关注 AI 基金经理、研究 Agent，平台负责决策执行、实时喊单、排行榜、积分计费和运营。我负责整体技术架构，也亲手写后端和基础设施。
+一个跑在生产环境、用 Agent 做交易决策的平台：用户创建或关注 AI 基金经理、分析师 Agent，平台负责决策执行、实时喊单、排行榜、积分计费和运营。我负责整体技术架构，也亲手写后端和基础设施。
 
 > 公司项目，代码未公开，以下只做脱敏描述。
 
@@ -21,7 +21,7 @@ flowchart TB
 
   subgraph agents["Agent 层"]
     P["基金经理 Agent<br/>按 PM 隔离状态"]
-    R["研究 Agent<br/>独立 Worker"]
+    R["分析师 Agent<br/>独立 Worker"]
   end
 
   subgraph trade["交易与数据"]
@@ -56,7 +56,7 @@ flowchart TB
 
 **架构分工**：前端与 Agent 运行时在 Cloudflare，业务后端在 GCP。CF 成本低、前端团队熟悉；GCP 有创业扶持、后端团队熟悉 K8s。跨云只覆盖用户侧请求（展示、管理、查询），Agent 的下单执行不跨云。
 
-**Agent 隔离**：基金经理 Agent 按 PM 隔离状态，交易所 API Key 等敏感凭证不跨 PM 共享；研究 Agent 各自独立部署，通过统一 Dispatch Worker 路由。
+**Agent 隔离**：基金经理 Agent 按 PM 隔离状态，交易所 API Key 等敏感凭证不跨 PM 共享；分析师 Agent 各自独立部署，通过统一 Dispatch Worker 路由。
 
 ### 云原生平台 · 从 0 到 1 与双云迁移
 
@@ -76,7 +76,7 @@ flowchart TB
 
 ### Agent 可观测与 MCP 工具链
 
-- 交易和研究 Agent 每天产生大量决策、订单、仓位日志，需要低成本查询和复盘。
+- 基金经理 Agent 和分析师 Agent 每天产生大量决策、订单、仓位日志，需要低成本查询和复盘。
 - 搭建日志服务：冷数据写 BigQuery，热点决策索引写 PostgreSQL，提供跨 Agent 查询和订单/权益增量落账。
 - 把决策查询从 BigQuery 全表扫改为 PG 索引表，消除超时；API Key 支持多 key 轮换。
 - 封装 MCP Server，让管理员用自然语言复盘经营数据；并提供 Claude Code skills 包操作平台。
