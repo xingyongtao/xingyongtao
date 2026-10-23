@@ -1,10 +1,48 @@
 # 你好，我是 Alex 👋
 
-后端工程师 / 公司技术负责人。做过实时数据链路、计费系统和两代产品的云原生基础设施，习惯从业务问题一路做到部署和运维。
+后端工程师 / 公司技术负责人。主要做 AI 交易平台的后端与基础设施，习惯从业务问题一路做到部署和运维。
 
-## 精选项目
+## 技术栈
 
-> 以下均为公司项目，代码未公开，只做脱敏描述。
+- **主力**：Go（Gin / chi / Huma）、PostgreSQL、Redis、Kafka
+- **常用**：MySQL、MongoDB、ClickHouse、BigQuery、Kubernetes、Terraform、ArgoCD、GCP / 腾讯云
+- **了解**：TypeScript / React、Python
+
+## AI 交易平台
+
+一个跑在生产环境、用 Agent 做交易决策的平台：用户创建或关注 AI 基金经理、研究 Agent，平台负责决策执行、实时喊单、排行榜、积分计费和运营。我负责整体技术架构，也亲手写后端和基础设施。
+
+> 公司项目，代码未公开，以下只做脱敏描述。
+
+```mermaid
+flowchart TB
+  U["用户 / 前端"]
+
+  subgraph trade["交易与数据"]
+    A["AI Agent<br/>基金经理 · 研究"]
+    E["交易执行<br/>仓位 · 订单"]
+    X["交易所"]
+    D["实时数据<br/>喊单 · 排行榜"]
+  end
+
+  subgraph support["平台支撑"]
+    L["日志与复盘"]
+    C["积分计费"]
+    O["运营后台"]
+  end
+
+  U --> A
+  A --> E
+  E --> X
+  A --> D
+  E --> D
+  D --> U
+  A --> L
+  E --> L
+  A --> C
+  L --> O
+  C --> O
+```
 
 ### 云原生平台 · 从 0 到 1 与双云迁移
 
@@ -28,12 +66,6 @@
 - 搭建日志服务：冷数据写 BigQuery，热点决策索引写 PostgreSQL，提供跨 Agent 查询和订单/权益增量落账。
 - 把决策查询从 BigQuery 全表扫改为 PG 索引表，消除超时；API Key 支持多 key 轮换。
 - 封装 MCP Server，让管理员用自然语言复盘经营数据；并提供 Claude Code skills 包操作平台。
-
-## 技术栈
-
-- **主力**：Go（Gin / chi / Huma）、PostgreSQL、Redis、Kafka
-- **常用**：MySQL、MongoDB、ClickHouse、BigQuery、Kubernetes、Terraform、ArgoCD、GCP / 腾讯云
-- **了解**：TypeScript / React、Python
 
 ## 关注
 
